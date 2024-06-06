@@ -97,7 +97,7 @@ def continue_convertation_major(input_prediction, user_input):
     # filter = filtered_df_url[filtered_df_url["nama_jurusan"] == filtered]
     
     
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="AIzaSyA1vSebG1XsacRyaTP4gilYBzDSvhxz0gs")
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="KEY")
     llm = llm.invoke(f"""
                      [CONTEXT]
                      {filtered_df_url["summary"].values}
@@ -156,7 +156,7 @@ def major_recomendation():
                 input_join = ' '.join(user_contents)
                 global predict
                 predict = predict_major(input_join)
-                llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="AIzaSyA1vSebG1XsacRyaTP4gilYBzDSvhxz0gs")
+                llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="KEY")
                 
                 llm = llm.invoke(f"""
                                  
