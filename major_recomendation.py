@@ -13,7 +13,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Downloading Model...")
 def load_models():
     sentence_embed_model = SentenceTransformer("firqaaa/indo-sentence-bert-base")
     print("MODEL TRANSFORMER: indo-sentence-bert-base ------------> READY")
