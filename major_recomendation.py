@@ -13,17 +13,22 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-def predict_major(input_text: str, model_path="model_rnn_bert.h5", embed_model_name="firqaaa/indo-sentence-bert-base", top_n=2):
+@st.cache_resource
+def load_models():
+    sentence_embed_model = SentenceTransformer("firqaaa/indo-sentence-bert-base")
+    print("MODEL TRANSFORMER: indo-sentence-bert-base ------------> READY")
+    return sentence_embed_model
+
+
+def predict_major(input_text: str, model_path="model_rnn_bert.h5", embed_model_name=None, top_n=2):
 
     with open('BERT_Embedding_Dataset.pkl', 'rb') as f:
         _, _, label_encoder = pickle.load(f)
     
     model = tf.keras.models.load_model(model_path)
-
-    sentence_embed_model = SentenceTransformer(embed_model_name)
     
     # Embed the input text
-    embedded_text = sentence_embed_model.encode([input_text])
+    embedded_text = embed_model_name.encode([input_text])
     
     # Reshape embedded_text to match the model's input shape
     embedded_text = np.reshape(embedded_text, (1, 1, -1))
@@ -97,7 +102,7 @@ def continue_convertation_major(input_prediction, user_input):
     # filter = filtered_df_url[filtered_df_url["nama_jurusan"] == filtered]
     
     
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="KEY")
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="AIzaSyA1vSebG1XsacRyaTP4gilYBzDSvhxz0gs")
     llm = llm.invoke(f"""
                      [CONTEXT]
                      {filtered_df_url["summary"].values}
@@ -123,6 +128,7 @@ def continue_convertation_major(input_prediction, user_input):
     return llm.content
 
 def major_recomendation():
+    sentence_embed_model = load_models()
     
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -152,11 +158,10 @@ def major_recomendation():
             with st.spinner("Mohon Tunggu..."):
                 user_contents = [message['content'] for message in st.session_state.messages if message['role'] == 'user']
 
-                # Menggabungkan semua elemen menjadi satu string
                 input_join = ' '.join(user_contents)
                 global predict
-                predict = predict_major(input_join)
-                llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="KEY")
+                predict = predict_major(input_join, embed_model_name=sentence_embed_model)
+                llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key="AIzaSyA1vSebG1XsacRyaTP4gilYBzDSvhxz0gs")
                 
                 llm = llm.invoke(f"""
                                  
